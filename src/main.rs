@@ -7,7 +7,7 @@ fn get_input() -> String {
     input.to_string()
 }
 
-fn parse(input: String, hash: &mut HashMap<String, HashSet<String>>) {
+fn parse(input: String, hash: &mut HashMap<String, Vec<String>>) {
     let split = input
         .split("=").collect::<Vec<&str>>();
 
@@ -35,7 +35,7 @@ fn parse(input: String, hash: &mut HashMap<String, HashSet<String>>) {
         },
         2 => {
             let values = split[1].split("+").collect::<Vec<&str>>();
-            hash.insert(key.to_string(), HashSet::new());
+            hash.insert(key.to_string(), vec![]);
 
             let mut successful: bool = true;
 
@@ -45,7 +45,7 @@ fn parse(input: String, hash: &mut HashMap<String, HashSet<String>>) {
                     println!("{value} is not an existing item. Please add it first.");
                     successful = false;
                 } else {
-                    let vals = hash.get(value.as_str()).unwrap().iter().cloned().collect::<HashSet<String>>();
+                    let vals = hash.get(value.as_str()).unwrap().iter().cloned().collect::<Vec<String>>();
                     hash.get_mut(key.to_string().as_str()).unwrap().extend(vals);
                 }
             }
@@ -55,7 +55,7 @@ fn parse(input: String, hash: &mut HashMap<String, HashSet<String>>) {
             }
 
             if key == split[1] {
-                hash.insert(key.to_string(), HashSet::from([key.to_string()]));
+                hash.insert(key.to_string(), Vec::from([key.to_string()]));
             }
         }
         _ => {
@@ -66,18 +66,18 @@ fn parse(input: String, hash: &mut HashMap<String, HashSet<String>>) {
 
 fn main() {
     let hash = std::fs::read_to_string("data.json");
-    let mut mega_hash_map: HashMap<String, HashSet<String>>;
+    let mut mega_hash_map: HashMap<String, Vec<String>>;
     match hash {
         Ok(hash) => {
             mega_hash_map = serde_json::from_str(hash.as_str()).unwrap();
         },
         _ => {
-            mega_hash_map = serde_json::from_str::<HashMap<String, HashSet<String>>>("{}").unwrap();
+            mega_hash_map = serde_json::from_str::<HashMap<String, Vec<String>>>("{}").unwrap();
 
-            mega_hash_map.insert(String::from("F"), HashSet::from([String::from("F")]));
-            mega_hash_map.insert(String::from("W"), HashSet::from([String::from("W")]));
-            mega_hash_map.insert(String::from("E"), HashSet::from([String::from("E")]));
-            mega_hash_map.insert(String::from("A"), HashSet::from([String::from("A")]));
+            mega_hash_map.insert(String::from("F"), vec!["F".to_string()]);
+            mega_hash_map.insert(String::from("W"), vec!["W".to_string()]);
+            mega_hash_map.insert(String::from("E"), vec!["E".to_string()]);
+            mega_hash_map.insert(String::from("A"), vec!["A".to_string()]);
 
             parse(String::from("fire=F"), &mut mega_hash_map);
             parse(String::from("water=W"), &mut mega_hash_map);
